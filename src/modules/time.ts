@@ -1,4 +1,4 @@
-    /* ========================================================================== */
+/* ========================================================================== */
 /*                                                                            */
 /*    brief:                                                :::   ::::::::    */
 /*                                                       :+:+:  :+:    :+:    */
@@ -96,5 +96,9 @@ export default class Time {
     const temp = `${tYear}-${tMonth}-${tDay}`
     console.log(temp)
     return temp
+  }
+
+  static getInstant(): string {
+    return Dayjs().format('HH:mm:ss:SSS')
   }
 }

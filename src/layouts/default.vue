@@ -1,16 +1,16 @@
 <template>
   <v-app dark>
-    <v-app-bar fixed app>
+    <!-- <v-app-bar fixed app>
       <v-toolbar-title v-text="title" />
-    </v-app-bar>
+    </v-app-bar> -->
     <v-main>
-      <v-container>
+      <v-container fluid>
         <Nuxt />
       </v-container>
     </v-main>
-    <v-footer absolute app>
+    <!-- <v-footer absolute app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
-    </v-footer>
+    </v-footer> -->
   </v-app>
 </template>
 

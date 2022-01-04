@@ -16,20 +16,14 @@
   </v-container>
   <v-container v-else class="ma-0 pa-0" fluid>
     <v-card outlined color="transparent">
-      <v-list-item three-line>
-        <v-list-item-content>
-          <v-list-item-title class="headline mb-1"> Console </v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
-
       <v-card-actions @keydown.46="onClear()">
         <v-row>
-          <v-col sm="12">
+          <v-col cols="8">
             <v-container fluid>
               <v-textarea
-                id="textarea_id"
+                id="id_textarea"
                 v-model="consoleText"
-                rows="20"
+                rows="19"
                 readonly
                 solo
               ></v-textarea>
@@ -40,6 +34,34 @@
                 @keyup.enter="onInput()"
               ></v-text-field>
             </v-container>
+          </v-col>
+          <v-col cols="4">
+            <v-card-title>
+              <v-row>
+                <v-col v-if="isSaveTxt" cols="12">
+                  <v-btn
+                    elevation="2"
+                    color="error"
+                    x-large
+                    block
+                    @click="stopFileSaving"
+                  >
+                    Stop file saving
+                  </v-btn>
+                </v-col>
+                <v-col v-else cols="12">
+                  <v-btn
+                    elevation="2"
+                    color="primary"
+                    x-large
+                    block
+                    @click="startFileSaving"
+                  >
+                    Start file saving
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-card-title>
           </v-col>
         </v-row>
       </v-card-actions>
@@ -52,8 +74,9 @@ import { mapGetters } from 'vuex'
 import Vue from 'vue'
 
 interface Idata {
+  writableStream: any
+  isSaveTxt: boolean
   isStart: boolean
-  textarea: HTMLElement | null
   input: string
   serial: any
   port: any
@@ -67,8 +90,9 @@ export default Vue.extend({
   name: 'FirstPage',
 
   data: (): Idata => ({
+    writableStream: null,
+    isSaveTxt: false,
     isStart: false,
-    textarea: null,
     input: '',
     serial: null,
     port: null,
@@ -86,12 +110,9 @@ export default Vue.extend({
 
   destroyed() {},
 
-  mounted() {
-    this.textarea = document.getElementById('textarea_id')
-    if (this.textarea !== null) {
-      this.textarea.scrollTop = this.textarea.scrollHeight
-    }
+  created() {},
 
+  mounted() {
     // @ts-ignore
     this.serial = navigator.serial
   },
@@ -101,11 +122,45 @@ export default Vue.extend({
       this.$store.commit('clearConsoleText')
     },
 
+    async stopFileSaving() {
+      this.isSaveTxt = false
+
+      // close the file and write the contents to disk.
+      await this.writableStream.close()
+    },
+
+    async startFileSaving() {
+      this.isSaveTxt = true
+
+      // create a new handle
+      // @ts-ignore
+      const newHandle = await window.showSaveFilePicker()
+
+      // create a FileSystemWritableFileStream to write to
+      this.writableStream = await newHandle.createWritable()
+
+      // close the file and write the contents to disk.
+      window.onbeforeunload = () => {
+        this.writableStream.close()
+        this.isSaveTxt = false
+        this.isStart = false
+      }
+    },
+
     async onInput() {
       await this.writer.write(this.input + '\r\n')
+      this.$store.commit('addConsoleText', this.input)
 
       // Allow the serial port to be closed later.
       // this.writer.releaseLock()
+
+      // write our file
+      if (this.isSaveTxt) {
+        const blob = new Blob([this.input + '\r\n'], {
+          type: 'application/txt',
+        })
+        this.writableStream.write(blob)
+      }
     },
 
     async initPort() {
@@ -113,6 +168,10 @@ export default Vue.extend({
 
       // this.serial.addEventListener('connect', alert)
       this.port.addEventListener('disconnect', alert)
+    },
+
+    async startPort() {
+      this.isStart = true
 
       // Class for Streams
       class LineBreakTransformer {
@@ -138,39 +197,39 @@ export default Vue.extend({
         }
       }
 
-      // Streams
+      // Open Port
+      await this.port.open({ baudRate: this.baudrate })
+
+      // Stream Rx
       const textDecoder = new TextDecoderStream()
-      const textEncoder = new TextEncoderStream()
-
-      // Pipes
       this.port.readable.pipeTo(textDecoder.writable)
-      textEncoder.readable.pipeTo(this.port.writable)
-
-      // Transformations
       const reader = textDecoder.readable
         .pipeThrough(new TransformStream(new LineBreakTransformer()))
         .getReader()
+
+      // Stream Tx
+      const textEncoder = new TextEncoderStream()
+      textEncoder.readable.pipeTo(this.port.writable)
       this.writer = textEncoder.writable.getWriter()
 
       // Listen to data coming from the serial device.
-      while (this.port.readable) {
+      while (true) {
         const { value, done } = await reader.read()
         if (done) {
           // Allow the serial port to be closed later.
           reader.releaseLock()
           break
         }
-        if (this.textarea !== null) {
-          this.$store.commit('addConsoleText', value)
-          this.textarea.scrollTop = this.textarea.scrollHeight
+        this.$store.commit('addConsoleText', value)
+
+        // write our file
+        if (this.isSaveTxt) {
+          const blob = new Blob([value], {
+            type: 'application/txt',
+          })
+          this.writableStream.write(blob)
         }
       }
-    },
-
-    async startPort() {
-      this.isStart = true
-
-      await this.port.open({ baudRate: this.baudrate })
     },
   },
 })
