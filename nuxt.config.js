@@ -58,11 +58,22 @@ export default {
   },
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa
+  // PWA module configuration: https://go.nuxtjs.dev/pwa
   pwa: {
+    meta: {
+      author: 'Thaurx',
+    },
     manifest: {
       lang: 'en',
+      useWebmanifestExtension: false,
+    },
+    icon: {
+      fileName: 'terminal-icon.png',
+      purpose: 'any',
+      sizes: [64, 120, 144, 152, 192, 256, 384, 512],
     },
   },
+
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
