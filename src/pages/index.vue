@@ -129,7 +129,7 @@ export default Vue.extend({
       this.innerHeight = window.innerHeight
       this.innerWidth = window.innerWidth
       const temp = Math.floor(this.innerHeight / 100)
-      this.nbRows = 3 * temp - 2
+      this.nbRows = 3 * temp - 4
     },
     onClear() {
       this.$store.commit('clearConsoleText')
