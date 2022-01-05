@@ -74,8 +74,6 @@ import { mapGetters } from 'vuex'
 import Vue from 'vue'
 
 interface Idata {
-  writableStream: any
-  isSaveTxt: boolean
   isStart: boolean
   input: string
   serial: any
@@ -90,8 +88,6 @@ export default Vue.extend({
   name: 'FirstPage',
 
   data: (): Idata => ({
-    writableStream: null,
-    isSaveTxt: false,
     isStart: false,
     input: '',
     serial: null,
@@ -122,29 +118,12 @@ export default Vue.extend({
       this.$store.commit('clearConsoleText')
     },
 
-    async stopFileSaving() {
-      this.isSaveTxt = false
-
-      // close the file and write the contents to disk.
-      await this.writableStream.close()
+    stopFileSaving() {
+      this.$store.commit('setSaveText', false)
     },
 
-    async startFileSaving() {
-      this.isSaveTxt = true
-
-      // create a new handle
-      // @ts-ignore
-      const newHandle = await window.showSaveFilePicker()
-
-      // create a FileSystemWritableFileStream to write to
-      this.writableStream = await newHandle.createWritable()
-
-      // close the file and write the contents to disk.
-      window.onbeforeunload = () => {
-        this.writableStream.close()
-        this.isSaveTxt = false
-        this.isStart = false
-      }
+    startFileSaving() {
+      this.$store.commit('setSaveText', true)
     },
 
     async onInput() {
@@ -153,14 +132,6 @@ export default Vue.extend({
 
       // Allow the serial port to be closed later.
       // this.writer.releaseLock()
-
-      // write our file
-      if (this.isSaveTxt) {
-        const blob = new Blob([this.input + '\r\n'], {
-          type: 'application/txt',
-        })
-        this.writableStream.write(blob)
-      }
     },
 
     async initPort() {
@@ -221,14 +192,6 @@ export default Vue.extend({
           break
         }
         this.$store.commit('addConsoleText', value)
-
-        // write our file
-        if (this.isSaveTxt) {
-          const blob = new Blob([value + '\r\n'], {
-            type: 'application/txt',
-          })
-          this.writableStream.write(blob)
-        }
       }
     },
   },
