@@ -20,7 +20,7 @@ export default {
   data() {
     return {
       title: 'Nuxt Terminal',
-      version: 'V1.0.1',
+      version: 'V1.0.2',
     }
   },
 }

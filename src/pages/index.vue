@@ -16,55 +16,54 @@
   </v-container>
   <v-container v-else class="ma-0 pa-0" fluid>
     <v-card outlined color="transparent">
-      <v-card-actions @keydown.46="onClear()">
-        <v-row>
-          <v-col cols="8">
-            <v-container fluid>
-              <v-textarea
-                id="id_textarea"
-                v-model="consoleText"
-                readonly
-                solo
-                :rows="nbRows"
-              ></v-textarea>
-              <v-text-field
-                v-model="input"
-                label="Send AT Command"
-                hide-details="auto"
-                @keyup.enter="onInput()"
-              ></v-text-field>
-            </v-container>
-          </v-col>
-          <v-col cols="4">
-            <v-card-title>
-              <v-row>
-                <v-col v-if="saveText" cols="12">
-                  <v-btn
-                    elevation="2"
-                    color="error"
-                    x-large
-                    block
-                    @click="stopFileSaving"
-                  >
-                    Stop file saving
-                  </v-btn>
-                </v-col>
-                <v-col v-else cols="12">
-                  <v-btn
-                    elevation="2"
-                    color="primary"
-                    x-large
-                    block
-                    @click="startFileSaving"
-                  >
-                    Start file saving
-                  </v-btn>
-                </v-col>
-              </v-row>
-            </v-card-title>
-          </v-col>
-        </v-row>
-      </v-card-actions>
+      <v-row>
+        <v-col cols="8">
+          <v-container fluid @keydown.46="onClear()">
+            <v-textarea
+              id="id_textarea"
+              v-model="consoleText"
+              readonly
+              solo
+              :rows="nbRows"
+            ></v-textarea>
+            <v-text-field
+              v-model="input"
+              label="Send AT Command"
+              hide-details="auto"
+              @keyup.enter="onInput()"
+            ></v-text-field>
+          </v-container>
+        </v-col>
+        <v-col cols="4">
+          <v-container v-if="saveText" fluid>
+            <v-btn
+              elevation="2"
+              color="error"
+              x-large
+              block
+              @click="stopFileSaving"
+            >
+              Stop file saving
+            </v-btn>
+          </v-container>
+          <v-container v-else fluid>
+            <v-btn
+              elevation="2"
+              color="primary"
+              x-large
+              block
+              @click="startFileSaving"
+            >
+              Start file saving
+            </v-btn>
+          </v-container>
+          <!-- <v-container fluid>
+            <v-btn elevation="2" color="normal" x-large block>
+              Set File Commands
+            </v-btn>
+          </v-container> -->
+        </v-col>
+      </v-row>
     </v-card>
   </v-container>
 </template>
