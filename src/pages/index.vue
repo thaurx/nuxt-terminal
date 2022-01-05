@@ -38,7 +38,7 @@
           <v-col cols="4">
             <v-card-title>
               <v-row>
-                <v-col v-if="isSaveTxt" cols="12">
+                <v-col v-if="isSaveText" cols="12">
                   <v-btn
                     elevation="2"
                     color="error"
@@ -100,7 +100,7 @@ export default Vue.extend({
 
   computed: {
     ...mapGetters({
-      consoleText: 'getConsoleText',
+      consoleText: 'isSaveText',
     }),
   },
 

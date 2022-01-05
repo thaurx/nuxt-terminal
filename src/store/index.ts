@@ -15,6 +15,9 @@ export const state = (): Istate => ({
 })
 
 export const getters = {
+  isSaveText: (state: Istate) => {
+    return state.isSaveTxt
+  },
   getConsoleText: (state: Istate) => {
     return state.consoleText
   },
