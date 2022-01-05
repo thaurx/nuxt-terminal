@@ -224,7 +224,7 @@ export default Vue.extend({
 
         // write our file
         if (this.isSaveTxt) {
-          const blob = new Blob([value], {
+          const blob = new Blob([value + '\r\n'], {
             type: 'application/txt',
           })
           this.writableStream.write(blob)
