@@ -23,9 +23,9 @@
               <v-textarea
                 id="id_textarea"
                 v-model="consoleText"
-                rows="19"
                 readonly
                 solo
+                :rows="nbRows"
               ></v-textarea>
               <v-text-field
                 v-model="input"
@@ -74,6 +74,9 @@ import { mapGetters } from 'vuex'
 import Vue from 'vue'
 
 interface Idata {
+  innerHeight: number
+  innerWidth: number
+  nbRows: number
   isStart: boolean
   input: string
   serial: any
@@ -88,6 +91,9 @@ export default Vue.extend({
   name: 'FirstPage',
 
   data: (): Idata => ({
+    innerHeight: 1080,
+    innerWidth: 720,
+    nbRows: 20,
     isStart: false,
     input: '',
     serial: null,
@@ -112,9 +118,19 @@ export default Vue.extend({
   mounted() {
     // @ts-ignore
     this.serial = navigator.serial
+
+    //
+    this.reportWindowSize()
+    window.onresize = this.reportWindowSize
   },
 
   methods: {
+    reportWindowSize() {
+      this.innerHeight = window.innerHeight
+      this.innerWidth = window.innerWidth
+      const temp = Math.floor(this.innerHeight / 100)
+      this.nbRows = 3 * temp - 2
+    },
     onClear() {
       this.$store.commit('clearConsoleText')
     },
