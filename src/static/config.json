@@ -1,0 +1,10 @@
+{
+  "button-1": {
+    "cmd": ["AT", "/!delay:1000", "ATI13", "/!delay:3000"],
+    "times": 2
+  },
+  "button-2": {
+    "cmd": ["AT", "/!delay:100", "ATI13", "/!delay:1000"],
+    "times": 2
+  }
+}

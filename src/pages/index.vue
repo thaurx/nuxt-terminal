@@ -57,11 +57,40 @@
               Start file saving
             </v-btn>
           </v-container>
-          <!-- <v-container fluid>
-            <v-btn elevation="2" color="normal" x-large block>
-              Set File Commands
+          <v-container v-if="isFile === false" fluid>
+            <v-btn
+              elevation="2"
+              color="normal"
+              x-large
+              block
+              @click="getFileExemple"
+            >
+              Get File Exemple
             </v-btn>
-          </v-container> -->
+          </v-container>
+          <v-container v-if="isFile === false" fluid>
+            <v-input x-large block> </v-input>
+            <v-file-input
+              truncate-length="15"
+              accept=".json"
+              outlined
+              label="File input"
+              @change="setFileCommands"
+            ></v-file-input>
+          </v-container>
+          <div v-if="isFile === true">
+            <v-container v-for="i in file" :key="i.key" fluid>
+              <v-btn
+                elevation="2"
+                color="normal"
+                x-large
+                block
+                @click="setButtonCommand(i)"
+              >
+                {{ i.key }}
+              </v-btn>
+            </v-container>
+          </div>
         </v-col>
       </v-row>
     </v-card>
@@ -72,11 +101,15 @@
 import { mapGetters } from 'vuex'
 import Vue from 'vue'
 
+import fileDownload from 'js-file-download'
+
 interface Idata {
   innerHeight: number
   innerWidth: number
   nbRows: number
   isStart: boolean
+  isFile: boolean
+  file: Array<any>
   input: string
   serial: any
   port: any
@@ -94,6 +127,8 @@ export default Vue.extend({
     innerWidth: 720,
     nbRows: 20,
     isStart: false,
+    isFile: false,
+    file: [],
     input: '',
     serial: null,
     port: null,
@@ -140,6 +175,53 @@ export default Vue.extend({
 
     startFileSaving() {
       this.$store.commit('setSaveText', true)
+    },
+
+    getFileExemple() {
+      const myConfig = {
+        'button-1': {
+          name: 'AT',
+          cmd: ['AT\r\n', '/!delay:100', 'ATI13\r\n', '/!delay:1000'],
+          times: 2,
+        },
+      }
+      fileDownload(JSON.stringify(myConfig), 'config.json')
+    },
+
+    setFileCommands(file: File) {
+      const reader = new FileReader()
+      reader.onload = (evt: any) => {
+        const temp = JSON.parse(evt.target.result)
+        const keys = Object.keys(temp)
+        const values = Object.values(temp)
+        for (let i = 0; i < keys.length; i++) {
+          this.file.push({ key: keys[i], value: values[i] })
+        }
+
+        this.isFile = true
+      }
+      reader.readAsText(file)
+    },
+
+    cmdDelay(timeMs: number) {
+      return new Promise((resolve) => setTimeout(resolve, timeMs))
+    },
+
+    async setButtonCommand(item: any) {
+      const tempCmd = item.value.cmd
+      const tempTimes = item.value.times
+      for (let i = 0; i < tempTimes; i++) {
+        for (let j = 0; j < tempCmd.length; j++) {
+          if (tempCmd[j].startsWith('/!')) {
+            const temp = tempCmd[j].split(':')
+            if (temp[0].toLowerCase() === '/!delay') {
+              await this.cmdDelay(parseInt(temp[1]))
+            }
+          } else {
+            await this.writer.write(tempCmd[j] + '\r\n')
+          }
+        }
+      }
     },
 
     async onInput() {
