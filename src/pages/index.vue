@@ -19,13 +19,16 @@
       <v-row>
         <v-col cols="8">
           <v-container fluid @keydown.46="onClear()">
-            <v-textarea
-              id="id_textarea"
-              v-model="consoleText"
-              readonly
-              solo
-              :rows="nbRows"
-            ></v-textarea>
+            <v-card id="id_textarea" class="overflow-y-auto" :height="nbRows">
+              <v-card-text>
+                <div v-for="(n, i) in consoleTab" :key="i" :class="n.color">
+                  {{ n.value }}
+                </div>
+                <br />
+              </v-card-text>
+            </v-card>
+            <br />
+
             <v-text-field
               v-model="input"
               label="Send AT Command"
@@ -140,7 +143,7 @@ export default Vue.extend({
 
   computed: {
     ...mapGetters({
-      consoleText: 'getConsoleText',
+      consoleTab: 'getConsoleTab',
       saveText: 'isSaveText',
     }),
   },
@@ -162,8 +165,13 @@ export default Vue.extend({
     reportWindowSize() {
       this.innerHeight = window.innerHeight
       this.innerWidth = window.innerWidth
-      const temp = Math.floor(this.innerHeight / 100)
-      this.nbRows = 3 * temp - 4
+      const temp = Math.floor(this.innerHeight / 3)
+      this.nbRows = temp * 2
+
+      const textarea = document.getElementById('id_textarea')
+      if (textarea !== null) {
+        textarea.scrollTop = textarea.scrollHeight
+      }
     },
     onClear() {
       this.$store.commit('clearConsoleText')

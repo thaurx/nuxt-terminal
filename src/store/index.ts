@@ -1,16 +1,16 @@
 import Time from '../modules/time'
 
 interface Istate {
-  consoleTab: Array<string>
-  consoleText: string
+  consoleTab: Array<any>
   isSaveTxt: boolean
+  colorTxt: string
   writableStream: any
 }
 
 export const state = (): Istate => ({
   consoleTab: [],
-  consoleText: '',
   isSaveTxt: false,
+  colorTxt: '',
   writableStream: null,
 })
 
@@ -18,15 +18,14 @@ export const getters = {
   isSaveText: (state: Istate) => {
     return state.isSaveTxt
   },
-  getConsoleText: (state: Istate) => {
-    return state.consoleText
+  getConsoleTab: (state: Istate) => {
+    return state.consoleTab
   },
 }
 
 export const mutations = {
   clearConsoleText(state: Istate) {
     state.consoleTab = []
-    state.consoleText = ''
   },
 
   async setSaveText(state: Istate, value: boolean) {
@@ -53,25 +52,105 @@ export const mutations = {
 
   addConsoleText(state: Istate, line: string) {
     if (line.length > 0) {
-      let localText = '[' + Time.getInstant() + ']   '
+      let localText = ''
       localText += line.toUpperCase()
-      localText += '\r\n'
-
       if (state.consoleTab.length === 1000) {
         state.consoleTab.shift()
       }
-      state.consoleTab.push(localText)
+
+      // Get Color
+      const re = /\\E\[[0-9]*M/gm
+      const colorTab = localText.match(re)
+      let localTextOnly = ''
+      if (colorTab && colorTab.length > 1) {
+        localTextOnly = localText.split(re)[1]
+      } else {
+        localTextOnly = localText
+      }
+
+      // Set Color Before
+      if (colorTab && colorTab.length > 0) {
+        console.log(colorTab[0].split('[')[1])
+        switch (colorTab[0].split('[')[1]) {
+          case '90M': // # Black
+            state.colorTxt = 'black--text'
+            break
+          case '91M': // # Red
+            state.colorTxt = 'red--text'
+            break
+          case '92M': // # Green
+            state.colorTxt = 'green--text'
+            break
+          case '93M': // # Yellow
+            state.colorTxt = 'yellow--text'
+            break
+          case '94M': // # Blue
+            state.colorTxt = 'blue--text'
+            break
+          case '95M': // # Purple
+            state.colorTxt = 'purple--text'
+            break
+          case '96M': // # Cyan
+            state.colorTxt = 'cyan--text'
+            break
+          case '97M': // # White
+            state.colorTxt = 'white--text'
+            break
+          case '0M': // # No
+            state.colorTxt = ''
+            break
+          default:
+            state.colorTxt = ''
+            break
+        }
+      }
+
+      // Add Time
+      const localTextAndTime = '[' + Time.getInstant() + ']   ' + localTextOnly
+
+      // Save Txt
+      state.consoleTab.push({ value: localTextAndTime, color: state.colorTxt })
+
+      // Set Color After
+      if (colorTab && colorTab.length > 0) {
+        switch (colorTab[1].split('[')[1]) {
+          case '90M': // # Black
+            state.colorTxt = 'black--text'
+            break
+          case '91M': // # Red
+            state.colorTxt = 'red--text'
+            break
+          case '92M': // # Green
+            state.colorTxt = 'green--text'
+            break
+          case '93M': // # Yellow
+            state.colorTxt = 'yellow--text'
+            break
+          case '94M': // # Blue
+            state.colorTxt = 'blue--text'
+            break
+          case '95M': // # Purple
+            state.colorTxt = 'purple--text'
+            break
+          case '96M': // # Cyan
+            state.colorTxt = 'cyan--text'
+            break
+          case '97M': // # White
+            state.colorTxt = 'white--text'
+            break
+          case '0M': // # No
+            state.colorTxt = ''
+            break
+          default:
+            break
+        }
+      }
 
       if (state.isSaveTxt === true) {
-        const blob = new Blob([localText], {
+        const blob = new Blob([localTextAndTime], {
           type: 'application/txt',
         })
         state.writableStream.write(blob)
-      }
-
-      state.consoleText = ''
-      for (let i = 0; i < state.consoleTab.length; i++) {
-        state.consoleText += state.consoleTab[i]
       }
     }
     const textarea = document.getElementById('id_textarea')
