@@ -2,6 +2,7 @@ import Time from '../modules/time'
 
 interface Istate {
   consoleTab: Array<any>
+  isTimeText: boolean
   isSaveTxt: boolean
   colorTxt: string
   writableStream: any
@@ -9,6 +10,7 @@ interface Istate {
 
 export const state = (): Istate => ({
   consoleTab: [],
+  isTimeText: false,
   isSaveTxt: false,
   colorTxt: '',
   writableStream: null,
@@ -17,6 +19,9 @@ export const state = (): Istate => ({
 export const getters = {
   isSaveText: (state: Istate) => {
     return state.isSaveTxt
+  },
+  isTimeText: (state: Istate) => {
+    return state.isTimeText
   },
   getConsoleTab: (state: Istate) => {
     return state.consoleTab
@@ -50,6 +55,10 @@ export const mutations = {
     }
   },
 
+  setTimeText(state: Istate, value: boolean) {
+    state.isTimeText = value
+  },
+
   addConsoleText(state: Istate, line: string) {
     if (line.length > 0) {
       let localText = ''
@@ -59,7 +68,8 @@ export const mutations = {
       }
 
       // Get Color
-      const re = /\[[0-9]*m/gm
+      console.log(localText)
+      const re = /e\[\d{1,2}m/gm
       const colorTab = localText.match(re)
       let localTextOnly = ''
       if (colorTab && colorTab.length > 0) {
@@ -105,8 +115,11 @@ export const mutations = {
       }
 
       // Add Time
-      const localTextAndTime =
-        '[' + Time.getInstant() + ']   ' + localTextOnly.toUpperCase()
+      let localTextAndTime = ''
+      if (state.isTimeText) {
+        localTextAndTime += '[' + Time.getInstant() + ']   '
+      }
+      localTextAndTime += localTextOnly.toUpperCase()
 
       // Save Txt
       state.consoleTab.push({ value: localTextAndTime, color: state.colorTxt })

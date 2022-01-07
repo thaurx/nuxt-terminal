@@ -60,6 +60,28 @@
               Start file saving
             </v-btn>
           </v-container>
+          <v-container v-if="timeText" fluid>
+            <v-btn
+              elevation="2"
+              color="error"
+              x-large
+              block
+              @click="stopTimeText"
+            >
+              No Time Text
+            </v-btn>
+          </v-container>
+          <v-container v-else fluid>
+            <v-btn
+              elevation="2"
+              color="primary"
+              x-large
+              block
+              @click="startTimeText"
+            >
+              Add Time Text
+            </v-btn>
+          </v-container>
           <v-container v-if="isFile === false" fluid>
             <v-btn
               elevation="2"
@@ -145,6 +167,7 @@ export default Vue.extend({
     ...mapGetters({
       consoleTab: 'getConsoleTab',
       saveText: 'isSaveText',
+      timeText: 'isTimeText',
     }),
   },
 
@@ -183,6 +206,14 @@ export default Vue.extend({
 
     startFileSaving() {
       this.$store.commit('setSaveText', true)
+    },
+
+    stopTimeText() {
+      this.$store.commit('setTimeText', false)
+    },
+
+    startTimeText() {
+      this.$store.commit('setTimeText', true)
     },
 
     getFileExemple() {
