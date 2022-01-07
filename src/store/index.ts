@@ -53,16 +53,16 @@ export const mutations = {
   addConsoleText(state: Istate, line: string) {
     if (line.length > 0) {
       let localText = ''
-      localText += line.toUpperCase()
+      localText += line
       if (state.consoleTab.length === 1000) {
         state.consoleTab.shift()
       }
 
       // Get Color
-      const re = /\\E\[[0-9]*M/gm
+      const re = /\[[0-9]*m/gm
       const colorTab = localText.match(re)
       let localTextOnly = ''
-      if (colorTab && colorTab.length > 1) {
+      if (colorTab && colorTab.length > 0) {
         localTextOnly = localText.split(re)[1]
       } else {
         localTextOnly = localText
@@ -70,33 +70,32 @@ export const mutations = {
 
       // Set Color Before
       if (colorTab && colorTab.length > 0) {
-        console.log(colorTab[0].split('[')[1])
         switch (colorTab[0].split('[')[1]) {
-          case '90M': // # Black
+          case '90m': // # Black
             state.colorTxt = 'black--text'
             break
-          case '91M': // # Red
+          case '91m': // # Red
             state.colorTxt = 'red--text'
             break
-          case '92M': // # Green
+          case '92m': // # Green
             state.colorTxt = 'green--text'
             break
-          case '93M': // # Yellow
+          case '93m': // # Yellow
             state.colorTxt = 'yellow--text'
             break
-          case '94M': // # Blue
+          case '94m': // # Blue
             state.colorTxt = 'blue--text'
             break
-          case '95M': // # Purple
+          case '95m': // # Purple
             state.colorTxt = 'purple--text'
             break
-          case '96M': // # Cyan
+          case '96m': // # Cyan
             state.colorTxt = 'cyan--text'
             break
-          case '97M': // # White
+          case '97m': // # White
             state.colorTxt = 'white--text'
             break
-          case '0M': // # No
+          case '0m': // # No
             state.colorTxt = ''
             break
           default:
@@ -106,39 +105,40 @@ export const mutations = {
       }
 
       // Add Time
-      const localTextAndTime = '[' + Time.getInstant() + ']   ' + localTextOnly
+      const localTextAndTime =
+        '[' + Time.getInstant() + ']   ' + localTextOnly.toUpperCase()
 
       // Save Txt
       state.consoleTab.push({ value: localTextAndTime, color: state.colorTxt })
 
       // Set Color After
-      if (colorTab && colorTab.length > 0) {
+      if (colorTab && colorTab.length > 1) {
         switch (colorTab[1].split('[')[1]) {
-          case '90M': // # Black
+          case '90m': // # Black
             state.colorTxt = 'black--text'
             break
-          case '91M': // # Red
+          case '91m': // # Red
             state.colorTxt = 'red--text'
             break
-          case '92M': // # Green
+          case '92m': // # Green
             state.colorTxt = 'green--text'
             break
-          case '93M': // # Yellow
+          case '93m': // # Yellow
             state.colorTxt = 'yellow--text'
             break
-          case '94M': // # Blue
+          case '94m': // # Blue
             state.colorTxt = 'blue--text'
             break
-          case '95M': // # Purple
+          case '95m': // # Purple
             state.colorTxt = 'purple--text'
             break
-          case '96M': // # Cyan
+          case '96m': // # Cyan
             state.colorTxt = 'cyan--text'
             break
-          case '97M': // # White
+          case '97m': // # White
             state.colorTxt = 'white--text'
             break
-          case '0M': // # No
+          case '0m': // # No
             state.colorTxt = ''
             break
           default:
