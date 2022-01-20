@@ -2,6 +2,7 @@ import Time from '../modules/time'
 
 interface Istate {
   consoleTab: Array<any>
+  isRefreshTxt: boolean
   isTimeText: boolean
   isSaveTxt: boolean
   colorTxt: string
@@ -10,6 +11,7 @@ interface Istate {
 
 export const state = (): Istate => ({
   consoleTab: [],
+  isRefreshTxt: true,
   isTimeText: false,
   isSaveTxt: false,
   colorTxt: '',
@@ -17,6 +19,9 @@ export const state = (): Istate => ({
 })
 
 export const getters = {
+  isRefreshText: (state: Istate) => {
+    return state.isRefreshTxt
+  },
   isSaveText: (state: Istate) => {
     return state.isSaveTxt
   },
@@ -53,6 +58,10 @@ export const mutations = {
       await state.writableStream.close()
       window.onbeforeunload = () => {}
     }
+  },
+
+  setRefreshText(state: Istate, value: boolean) {
+    state.isRefreshTxt = value
   },
 
   setTimeText(state: Istate, value: boolean) {
@@ -167,7 +176,7 @@ export const mutations = {
       }
     }
     const textarea = document.getElementById('id_textarea')
-    if (textarea !== null) {
+    if (textarea !== null && state.isRefreshTxt) {
       textarea.scrollTop = textarea.scrollHeight
     }
   },

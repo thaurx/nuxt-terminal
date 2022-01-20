@@ -19,7 +19,12 @@
       <v-row>
         <v-col cols="8">
           <v-container fluid @keydown.46="onClear()">
-            <v-card id="id_textarea" class="overflow-y-auto" :height="nbRows">
+            <v-card
+              id="id_textarea"
+              class="overflow-y-auto"
+              :height="nbRows"
+              @click="setRefreshText"
+            >
               <v-card-text>
                 <div v-for="(n, i) in consoleTab" :key="i" :class="n.color">
                   {{ n.value }}
@@ -166,6 +171,7 @@ export default Vue.extend({
   computed: {
     ...mapGetters({
       consoleTab: 'getConsoleTab',
+      rehreshText: 'isRefreshText',
       saveText: 'isSaveText',
       timeText: 'isTimeText',
     }),
@@ -192,10 +198,23 @@ export default Vue.extend({
       this.nbRows = temp * 2
 
       const textarea = document.getElementById('id_textarea')
-      if (textarea !== null) {
+      if (textarea !== null && this.rehreshText) {
         textarea.scrollTop = textarea.scrollHeight
       }
     },
+
+    setRefreshText() {
+      if (this.rehreshText) {
+        this.$store.commit('setRefreshText', false)
+      } else {
+        this.$store.commit('setRefreshText', true)
+        const textarea = document.getElementById('id_textarea')
+        if (textarea !== null && this.rehreshText) {
+          textarea.scrollTop = textarea.scrollHeight
+        }
+      }
+    },
+
     onClear() {
       this.$store.commit('clearConsoleText')
     },
