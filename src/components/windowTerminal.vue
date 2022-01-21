@@ -23,7 +23,10 @@
         ></v-select>
       </v-col>
       <v-col cols="4">
-        <v-btn block @click="openPort">Test</v-btn>
+        <v-btn v-if="portOpen" block color="error" @click="closePort"
+          >Close</v-btn
+        >
+        <v-btn v-else block color="success" @click="openPort">Open</v-btn>
       </v-col>
     </v-row>
     <v-row>
@@ -63,11 +66,14 @@ interface Idata {
   innerHeight: number
   innerWidth: number
   nbRows: number
+  readerStop: any
+  writerStop: any
   reader: any
   writer: any
   input: string
   id: any
   port: any
+  portOpen: boolean
   selected: any
   baudrate: number
   baudrates: Array<number>
@@ -84,11 +90,14 @@ export default Vue.extend({
     innerHeight: 1080,
     innerWidth: 720,
     nbRows: 500,
+    readerStop: null,
+    writerStop: null,
     reader: null,
     writer: null,
     input: '',
     id: '',
     port: null,
+    portOpen: false,
     selected: null,
     baudrate: 9600,
     baudrates: [9600, 115200, 500000],
@@ -130,11 +139,10 @@ export default Vue.extend({
     },
 
     async onInput() {
-      await this.writer.write(this.input + '\r\n')
+      if (this.portOpen) {
+        await this.writer.write(this.input + '\r\n')
+      }
       this.$store.commit('option/addConsoleText' + this.init, this.input)
-
-      // Allow the serial port to be closed later.
-      // this.writer.releaseLock()
     },
 
     async initPort() {
@@ -159,6 +167,23 @@ export default Vue.extend({
         this.port = this.ports[get].port
         console.log(this.port)
       }
+    },
+
+    async closePort() {
+      try {
+        await this.reader.cancel()
+        await this.readerStop.catch(() => {
+          /* Ignore the error */
+        })
+
+        await this.writer.close()
+        await this.writerStop
+
+        await this.port.close()
+      } catch (e) {
+        alert('erre')
+      }
+      this.portOpen = false
     },
 
     async openPort() {
@@ -190,24 +215,26 @@ export default Vue.extend({
       // Open Port
       await this.port.open({ baudRate: this.baudrate })
 
+      this.portOpen = true
+
       // Stream Rx
       const textDecoder = new TextDecoderStream()
-      this.port.readable.pipeTo(textDecoder.writable)
-      const reader = textDecoder.readable
+      this.readerStop = this.port.readable.pipeTo(textDecoder.writable)
+      this.reader = textDecoder.readable
         .pipeThrough(new TransformStream(new LineBreakTransformer()))
         .getReader()
 
       // Stream Tx
       const textEncoder = new TextEncoderStream()
-      textEncoder.readable.pipeTo(this.port.writable)
+      this.writerStop = textEncoder.readable.pipeTo(this.port.writable)
       this.writer = textEncoder.writable.getWriter()
 
       // Listen to data coming from the serial device.
       while (true) {
-        const { value, done } = await reader.read()
+        const { value, done } = await this.reader.read()
         if (done) {
           // Allow the serial port to be closed later.
-          reader.releaseLock()
+          this.reader.releaseLock()
           break
         }
         this.$store.commit('option/addConsoleText' + this.init, value)
