@@ -88,7 +88,7 @@ export default Vue.extend({
 
   data: (): Idata => ({
     title: 'Nuxt Terminal',
-    version: 'V1.0.4',
+    version: 'V1.1.0',
     drawnerL: false,
     items0: [
       { title: 'Add time', switch: false, icon: 'mdi-view-dashboard' },
