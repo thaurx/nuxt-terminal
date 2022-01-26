@@ -119,7 +119,7 @@ export default Vue.extend({
 
     onBaudrate(baudrate: number) {
       this.closePort()
-      this.$store.commit('serial/setSerialBaudate1', baudrate)
+      this.$store.commit('serial/setSerialBaudate2', baudrate)
     },
 
     onInput() {
