@@ -13,6 +13,10 @@ interface Istate {
   colorTxt2: string
 
   writableStream: any
+
+  file: Array<any>
+
+  items: Array<any>
 }
 
 export const state = (): Istate => ({
@@ -28,6 +32,46 @@ export const state = (): Istate => ({
   colorTxt2: '',
 
   writableStream: null,
+
+  file: [],
+
+  items: [
+    {
+      title: 'Add time',
+      switch: false,
+      icon: 'mdi-view-dashboard',
+      iconOn: 'mdi-square-rounded',
+      iconOff: 'mdi-square-rounded-outline',
+    },
+    {
+      title: 'Commands',
+      switch: false,
+      icon: 'mdi-view-dashboard',
+      iconOn: 'mdi-square-rounded',
+      iconOff: 'mdi-square-rounded-outline',
+    },
+    {
+      title: 'Dual mode',
+      switch: false,
+      icon: 'mdi-view-dashboard',
+      iconOn: 'mdi-square-rounded',
+      iconOff: 'mdi-square-rounded-outline',
+    },
+    {
+      title: 'Save logs',
+      switch: false,
+      icon: 'mdi-image',
+      iconOn: 'mdi-square-rounded',
+      iconOff: 'mdi-square-rounded-outline',
+    },
+    {
+      title: 'Uart color',
+      switch: false,
+      icon: 'mdi-help-box',
+      iconOn: 'mdi-square-rounded',
+      iconOff: 'mdi-square-rounded-outline',
+    },
+  ],
 })
 
 export const getters = {
@@ -46,6 +90,9 @@ export const getters = {
   isOptionUartColor: (state: Istate) => {
     return state.optionUartColor
   },
+  getItems: (state: Istate) => {
+    return state.items
+  },
   getConsoleTab1: (state: Istate) => {
     return state.consoleTab1
   },
@@ -61,14 +108,20 @@ export const mutations = {
   clearConsoleText2(state: Istate) {
     state.consoleTab2 = []
   },
+  setItems(state: Istate, value: any) {
+    state.items = value
+  },
   setOptionAddTime(state: Istate, value: boolean) {
     state.optionAddTime = value
+    state.items[0].switch = value
   },
   setOptionCommands(state: Istate, value: boolean) {
     state.optionCommands = value
+    state.items[1].switch = value
   },
   setOptionDuoMode(state: Istate, value: boolean) {
     state.optionDuoMode = value
+    state.items[2].switch = value
   },
   async setOptionFileTxt(state: Istate, value: boolean) {
     state.optionFileTxt = value
@@ -76,9 +129,11 @@ export const mutations = {
       await state.writableStream.close()
       window.onbeforeunload = () => {}
     }
+    state.items[3].switch = value
   },
   setOptionUartColor(state: Istate, value: boolean) {
     state.optionUartColor = value
+    state.items[4].switch = value
   },
   setWritableStream(state: Istate, value: boolean) {
     state.writableStream = value

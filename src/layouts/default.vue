@@ -18,7 +18,7 @@
 
       <v-list dense nav>
         <v-list-item
-          v-for="item in items0"
+          v-for="item in optionItems"
           :key="item.title"
           link
           @click="onSwitch(item)"
@@ -31,15 +31,16 @@
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item-content>
 
-          <v-list-item-action>
-            <v-switch :value.sync="item.switch"></v-switch>
-          </v-list-item-action>
+          <v-list-item-icon>
+            <v-icon v-if="item.switch">{{ item.iconOn }}</v-icon>
+            <v-icon v-else>{{ item.iconOff }}</v-icon>
+          </v-list-item-icon>
         </v-list-item>
       </v-list>
 
       <v-divider></v-divider>
 
-      <v-list dense nav>
+      <!-- <v-list dense nav>
         <v-list-item v-for="item in items1" :key="item.title" link>
           <v-list-item-icon>
             <v-icon>{{ item.icon }}</v-icon>
@@ -47,6 +48,32 @@
 
           <v-list-item-content>
             <v-list-item-title>{{ item.title }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item> -->
+
+      <v-list dense nav>
+        <v-list-item link @click="getFileExemple">
+          <v-list-item-icon>
+            <v-icon>mdi-view-dashboard</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>Get Commands File </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item link>
+          <v-list-item-content>
+            <!-- <v-list-item-title>Set Commands File </v-list-item-title> -->
+
+            <v-file-input
+              truncate-length="15"
+              accept=".json"
+              outlined
+              dense
+              label="Set Commands File"
+              @change="setFileCommands"
+            ></v-file-input>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -74,13 +101,13 @@
 import { mapGetters } from 'vuex'
 import Vue from 'vue'
 
+import fileDownload from 'js-file-download'
+
 interface Idata {
   title: string
   version: string
   drawnerL: boolean
-  items0: any
   items1: any
-  switch1: boolean
   lastItem: any
 }
 export default Vue.extend({
@@ -88,20 +115,12 @@ export default Vue.extend({
 
   data: (): Idata => ({
     title: 'Nuxt Terminal',
-    version: 'V1.1.0',
+    version: 'V1.1.1',
     drawnerL: false,
-    items0: [
-      { title: 'Add time', switch: false, icon: 'mdi-view-dashboard' },
-      { title: 'Commands', switch: false, icon: 'mdi-view-dashboard' },
-      { title: 'Dual mode', switch: false, icon: 'mdi-view-dashboard' },
-      { title: 'Save logs', switch: false, icon: 'mdi-image' },
-      { title: 'Uart color', switch: false, icon: 'mdi-help-box' },
-    ],
     items1: [
-      { title: 'Get Commands File', icon: 'mdi-view-dashboard' },
-      { title: 'Set Commands File', icon: 'mdi-view-dashboard' },
+      { title: '', icon: '' },
+      { title: '', icon: 'mdi-view-dashboard' },
     ],
-    switch1: false,
     lastItem: {
       switch: false,
       title: '',
@@ -110,42 +129,22 @@ export default Vue.extend({
 
   computed: {
     ...mapGetters({
-      serial: 'serial/getSerial',
-      port: 'serial/getSerialPort',
-      ports: 'serial/getSerialPorts',
+      optionDuoMode: 'option/isOptionDuoMode',
+      optionItems: 'option/getItems',
     }),
   },
 
   mounted() {
-    // @ts-ignore
-    this.$store.commit('serial/setSerial', navigator.serial)
-    this.serial.addEventListener('connect', () => {
-      this.addPorts()
-    })
-    this.serial.addEventListener('disconnect', () => {
-      this.addPorts()
-    })
-    this.addPorts()
+    this.$store.dispatch('serial/initSerial')
+
+    window.onbeforeunload = () => {
+      this.$store.commit('option/clearConsoleText1', false)
+      this.$store.commit('option/clearConsoleText2', false)
+      this.$store.commit('option/setOptionFileTxt', false)
+    }
   },
 
   methods: {
-    addPorts() {
-      this.serial.getPorts().then((ports: any) => {
-        const myPortsWithName = []
-        for (let i = 0; i < ports.length; i++) {
-          myPortsWithName.push({
-            name: 'Port ' + (i + 1),
-            port: ports[i],
-          })
-        }
-        myPortsWithName.push({
-          name: 'Add port',
-          port: null,
-        })
-        this.$store.commit('serial/setSerialPorts', myPortsWithName)
-      })
-    },
-
     async setSaveText(value: boolean) {
       if (value === true) {
         // @ts-ignore create a new handle
@@ -156,40 +155,35 @@ export default Vue.extend({
         this.$store.commit('option/setWritableStream', myWritableStream)
 
         // close the file and write the contents to disk.
-        window.onbeforeunload = () => {
-          this.$store.commit('option/setOptionFileTxt', false)
-        }
         this.$store.commit('option/setOptionFileTxt', true)
       } else {
         this.$store.commit('option/setOptionFileTxt', false)
       }
     },
 
-    async onSwitch1() {},
-
     async onSwitch(item: any) {
-      console.log(item)
-      item.switch = !item.switch
+      // console.log(item)
+      // item.switch = !item.switch
 
       switch (item.title) {
         case 'Add time':
-          this.$store.commit('option/setOptionAddTime', item.switch)
+          this.$store.commit('option/setOptionAddTime', !item.switch)
           break
 
         case 'Commands':
-          this.$store.commit('option/setOptionCommands', item.switch)
+          this.$store.commit('option/setOptionCommands', !item.switch)
           break
 
         case 'Dual mode':
-          this.$store.commit('option/setOptionDuoMode', item.switch)
+          this.$store.commit('option/setOptionDuoMode', !item.switch)
           break
 
         case 'Save logs':
-          await this.setSaveText(item.switch)
+          await this.setSaveText(!item.switch)
           break
 
         case 'Uart color':
-          this.$store.commit('option/setOptionUartColor', item.switch)
+          this.$store.commit('option/setOptionUartColor', !item.switch)
           break
 
         default:
@@ -201,27 +195,55 @@ export default Vue.extend({
       this.drawnerL = !this.drawnerL
     },
 
-    // async setSaveText(value: boolean) {
-    //   this.isSaveTxt = value
-    //   if (this.isSaveTxt === true) {
-    //     // create a new handle
-    //     // @ts-ignore
-    //     const newHandle = await window.showSaveFilePicker()
+    getFileExemple() {
+      if (this.optionDuoMode) {
+        const myConfig = [
+          {
+            name: 'AT',
+            cmd: ['AT\r\n', '/!delay:100', 'ATI13\r\n', '/!delay:1000'],
+            times: 2,
+            index: 1,
+          },
+          {
+            name: 'AT',
+            cmd: ['AT\r\n', '/!delay:100', 'ATI13\r\n', '/!delay:1000'],
+            times: 2,
+            index: 2,
+          },
+        ]
+        fileDownload(JSON.stringify(myConfig), 'config.json')
+      } else {
+        const myConfig = [
+          {
+            name: 'AT',
+            cmd: ['AT\r\n', '/!delay:100', 'ATI13\r\n', '/!delay:1000'],
+            times: 2,
+          },
+          {
+            name: 'AT',
+            cmd: ['AT\r\n', '/!delay:100', 'ATI13\r\n', '/!delay:1000'],
+            times: 2,
+          },
+        ]
+        fileDownload(JSON.stringify(myConfig), 'config.json')
+      }
+    },
 
-    //     // create a FileSystemWritableFileStream to write to
-    //     this.writableStream = await newHandle.createWritable()
-
-    //     // close the file and write the contents to disk.
-    //     window.onbeforeunload = () => {
-    //       this.writableStream.close()
-    //       this.isSaveTxt = false
-    //     }
-    //   } else {
-    //     // close the file and write the contents to disk.
-    //     await this.writableStream.close()
-    //     window.onbeforeunload = () => {}
-    //   }
-    // },
+    setFileCommands(file: File) {
+      const reader = new FileReader()
+      reader.onload = (evt: any) => {
+        const temp = JSON.parse(evt.target.result)
+        this.$store.commit('commands/clearCommands')
+        for (let i = 0; i < temp.length; i++) {
+          this.$store.commit('commands/setCommands', {
+            name: temp[i].name,
+            value: temp[i],
+          })
+        }
+        this.$store.commit('commands/setCommandsPad')
+      }
+      reader.readAsText(file)
+    },
   },
 })
 </script>

@@ -15,7 +15,7 @@
       </v-col>
       <v-col cols="4">
         <v-select
-          v-model="baudrate"
+          :value-sync="baudrate"
           solo
           dense
           label="Baudrate"
@@ -23,7 +23,7 @@
         ></v-select>
       </v-col>
       <v-col cols="4">
-        <v-btn v-if="portOpen" block color="error" @click="closePort"
+        <v-btn v-if="isSerialOpen1" block color="error" @click="closePort"
           >Close</v-btn
         >
         <v-btn v-else block color="success" @click="openPort">Open</v-btn>
@@ -45,7 +45,6 @@
             <br />
           </v-card-text>
         </v-card>
-        <br />
 
         <v-text-field
           v-model="input"
@@ -66,13 +65,8 @@ interface Idata {
   innerHeight: number
   innerWidth: number
   nbRows: number
-  readerStop: any
-  writerStop: any
-  reader: any
-  writer: any
   input: string
   id: any
-  port: any
   portOpen: boolean
   selected: any
   baudrate: number
@@ -90,13 +84,8 @@ export default Vue.extend({
     innerHeight: 1080,
     innerWidth: 720,
     nbRows: 500,
-    readerStop: null,
-    writerStop: null,
-    reader: null,
-    writer: null,
     input: '',
     id: '',
-    port: null,
     portOpen: false,
     selected: null,
     baudrate: 9600,
@@ -107,6 +96,7 @@ export default Vue.extend({
     ...mapGetters({
       consoleTab1: 'option/getConsoleTab1',
       consoleTab2: 'option/getConsoleTab2',
+      isSerialOpen1: 'serial/isSerialOpen1',
       serial: 'serial/getSerial',
       ports: 'serial/getSerialPorts',
     }),
@@ -118,7 +108,7 @@ export default Vue.extend({
 
   mounted() {
     // @ts-ignore
-    this.id = 'id_textarea' + this._uid
+    this.id = 'id_textarea' + this.init
 
     //
     this.reportWindowSize()
@@ -132,31 +122,20 @@ export default Vue.extend({
       const temp = Math.floor(this.innerHeight / 30)
       this.nbRows = temp * 18
 
-      const textarea = document.getElementById(this.id)
+      const textarea = document.getElementById('id_textarea')
       if (textarea !== null) {
         textarea.scrollTop = textarea.scrollHeight
       }
     },
 
-    async onInput() {
-      if (this.portOpen) {
-        await this.writer.write(this.input + '\r\n')
+    onInput() {
+      if (this.isSerialOpen1) {
+        this.$store.dispatch('serial/writeLine1', this.input)
       }
-      this.$store.commit('option/addConsoleText' + this.init, this.input)
     },
 
-    async initPort() {
-      await this.serial
-        .requestPort()
-        .then((port: any) => {
-          this.$store.commit('serial/setSerialPort', port)
-          this.port = port
-          // Connect to `port` or add it to the list of available ports.
-        })
-        .catch((e: any) => {
-          alert(e)
-          // The user didn't select a port.
-        })
+    initPort() {
+      this.$store.dispatch('serial/requestSerial1', this.init)
     },
 
     async selectPort(selected: string) {
@@ -164,86 +143,22 @@ export default Vue.extend({
         await this.initPort()
       } else {
         const get = parseInt(selected.split(' ')[1]) - 1
-        this.port = this.ports[get].port
-        console.log(this.port)
+        // this.port = this.ports[get].port
+        this.$store.commit('serial/setSerialPort1', this.ports[get].port)
+        console.log(get)
       }
     },
 
-    async closePort() {
-      try {
-        await this.reader.cancel()
-        await this.readerStop.catch(() => {
-          /* Ignore the error */
-        })
-
-        await this.writer.close()
-        await this.writerStop
-
-        await this.port.close()
-      } catch (e) {
-        alert('erre')
-      }
-      this.portOpen = false
+    closePort() {
+      this.$store.dispatch('serial/closeSerialPort1', {
+        index: this.init,
+      })
     },
 
-    async openPort() {
-      // await this.initPort()
-      // Class for Streams
-      class LineBreakTransformer {
-        chunks: any
-
-        constructor() {
-          // A container for holding stream data until a new line.
-          this.chunks = ''
-        }
-
-        transform(chunk: any, controller: any) {
-          // Append new chunks to existing chunks.
-          this.chunks += chunk
-          // For each line breaks in chunks, send the parsed lines out.
-          const lines = this.chunks.split('\r\n')
-          this.chunks = lines.pop()
-          lines.forEach((line: string) => controller.enqueue(line))
-        }
-
-        flush(controller: any) {
-          // When the stream is closed, flush any remaining chunks out.
-          controller.enqueue(this.chunks)
-        }
-      }
-
-      // Open Port
-      await this.port.open({ baudRate: this.baudrate })
-
-      this.portOpen = true
-
-      // Stream Rx
-      const textDecoder = new TextDecoderStream()
-      this.readerStop = this.port.readable.pipeTo(textDecoder.writable)
-      this.reader = textDecoder.readable
-        .pipeThrough(new TransformStream(new LineBreakTransformer()))
-        .getReader()
-
-      // Stream Tx
-      const textEncoder = new TextEncoderStream()
-      this.writerStop = textEncoder.readable.pipeTo(this.port.writable)
-      this.writer = textEncoder.writable.getWriter()
-
-      // Listen to data coming from the serial device.
-      while (true) {
-        const { value, done } = await this.reader.read()
-        if (done) {
-          // Allow the serial port to be closed later.
-          this.reader.releaseLock()
-          break
-        }
-        this.$store.commit('option/addConsoleText' + this.init, value)
-
-        const textarea = document.getElementById(this.id)
-        if (textarea !== null) {
-          textarea.scrollTop = textarea.scrollHeight
-        }
-      }
+    openPort() {
+      this.$store.dispatch('serial/openSerialPort1', {
+        index: this.init,
+      })
     },
   },
 })

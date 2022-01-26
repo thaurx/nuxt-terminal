@@ -2,7 +2,7 @@
   <v-card outlined color="transparent">
     <v-row v-if="optionCommands">
       <v-col cols="9">
-        <v-row v-if="optionDuoMode">
+        <!-- <v-row v-if="optionDuoMode">
           <v-col cols="6">
             <WindowTerminal init="1" />
           </v-col>
@@ -10,7 +10,8 @@
             <WindowTerminal init="2" />
           </v-col>
         </v-row>
-        <v-row v-else>
+        <v-row v-else> -->
+        <v-row>
           <v-col cols="12">
             <WindowTerminal init="1" />
           </v-col>
@@ -22,7 +23,7 @@
     </v-row>
     <v-row v-else>
       <v-col cols="12">
-        <v-row v-if="optionDuoMode">
+        <!-- <v-row v-if="optionDuoMode">
           <v-col cols="6">
             <WindowTerminal init="1" />
           </v-col>
@@ -30,7 +31,8 @@
             <WindowTerminal init="2" />
           </v-col>
         </v-row>
-        <v-row v-else>
+        <v-row v-else> -->
+        <v-row>
           <v-col cols="12">
             <WindowTerminal init="1" />
           </v-col>
@@ -60,6 +62,12 @@ export default Vue.extend({
   data: (): Idata => ({}),
 
   computed: {
+    loaded() {
+      return (
+        this.$store.state.localStorage.status &&
+        this.$store.state.sessionStorage.status
+      )
+    },
     ...mapGetters({
       optionCommands: 'option/isOptionCommands',
       optionDuoMode: 'option/isOptionDuoMode',

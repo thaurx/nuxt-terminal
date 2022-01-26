@@ -2,7 +2,9 @@
   <div>
     <v-row>
       <v-col cols="4">
-        <v-btn dense block @click="decreasePage"><</v-btn>
+        <v-btn dense block @click="decreasePage">
+          <v-icon left> mdi-arrow-left-bold </v-icon>
+        </v-btn>
       </v-col>
       <v-col cols="4">
         <div>
@@ -10,45 +12,27 @@
         </div>
       </v-col>
       <v-col cols="4">
-        <v-btn dense block @click="increasePage">></v-btn>
+        <v-btn dense block @click="increasePage">
+          <v-icon left> mdi-arrow-right-bold </v-icon>
+        </v-btn>
       </v-col>
     </v-row>
     <v-row class="mt-6 pt-7">
       <v-col cols="12">
         <v-card elevation="2" color="grey">
           <v-row class="mx-0" style="overflow: hidden">
-            <!-- Add `overflow: hidden;` here! -->
-
             <v-col cols="12">
-              <v-btn class="mx-0 mb-3 pa-0" block @click="stopFileSaving">
-                -
-              </v-btn>
-              <v-btn class="mx-0 mb-3 pa-0" block @click="stopFileSaving">
-                -
-              </v-btn>
-              <v-btn class="mx-0 mb-3 pa-0" block @click="stopFileSaving">
-                -
-              </v-btn>
-              <v-btn class="mx-0 mb-3 pa-0" block @click="stopFileSaving">
-                -
-              </v-btn>
-              <v-btn class="mx-0 mb-3 pa-0" block @click="stopFileSaving">
-                -
-              </v-btn>
-              <v-btn class="mx-0 mb-3 pa-0" block @click="stopFileSaving">
-                -
-              </v-btn>
-              <v-btn class="mx-0 mb-3 pa-0" block @click="stopFileSaving">
-                -
-              </v-btn>
-              <v-btn class="mx-0 mb-3 pa-0" block @click="stopFileSaving">
-                -
-              </v-btn>
-              <v-btn class="mx-0 mb-3 pa-0" block @click="stopFileSaving">
-                -
-              </v-btn>
-              <v-btn class="mx-0 mb-3 pa-0" block @click="stopFileSaving">
-                -
+              <v-btn
+                v-for="(item, index) in commands.slice(
+                  10 * page + 0,
+                  10 * page + 10
+                )"
+                :key="index"
+                class="mx-0 mb-3 pa-0"
+                block
+                @click="commandClik(10 * page + index)"
+              >
+                {{ item.name }}
               </v-btn>
             </v-col>
           </v-row>
@@ -60,7 +44,7 @@
           color="error"
           class="mx-0 mb-3 pa-0"
           block
-          @click="stopFileSaving"
+          @click="commandClik"
         >
           Stop file saving
         </v-btn>
@@ -134,11 +118,7 @@
 import { mapGetters } from 'vuex'
 import Vue from 'vue'
 
-import fileDownload from 'js-file-download'
-
 interface Idata {
-  isFile: boolean
-  file: Array<any>
   page: number
   pageMax: number
 }
@@ -147,8 +127,6 @@ export default Vue.extend({
   name: 'ButtonCommands',
 
   data: (): Idata => ({
-    isFile: false,
-    file: [],
     page: 0,
     pageMax: 1,
   }),
@@ -156,6 +134,7 @@ export default Vue.extend({
   computed: {
     ...mapGetters({
       optionDuoMode: 'option/isOptionDuoMode',
+      commands: 'commands/getCommands',
     }),
   },
 
@@ -169,55 +148,9 @@ export default Vue.extend({
     decreasePage() {
       if (this.page > 0) this.page--
     },
+
     increasePage() {
       if (this.page < this.pageMax) this.page++
-    },
-
-    getFileExemple() {
-      if (this.optionDuoMode) {
-        const myConfig = [
-          {
-            name: 'AT',
-            cmd: ['AT\r\n', '/!delay:100', 'ATI13\r\n', '/!delay:1000'],
-            times: 2,
-            serialIndex: 1,
-          },
-          {
-            name: 'AT',
-            cmd: ['AT\r\n', '/!delay:100', 'ATI13\r\n', '/!delay:1000'],
-            times: 2,
-            serialIndex: 2,
-          },
-        ]
-        fileDownload(JSON.stringify(myConfig), 'config.json')
-      } else {
-        const myConfig = [
-          {
-            name: 'AT',
-            cmd: ['AT\r\n', '/!delay:100', 'ATI13\r\n', '/!delay:1000'],
-            times: 2,
-          },
-          {
-            name: 'AT',
-            cmd: ['AT\r\n', '/!delay:100', 'ATI13\r\n', '/!delay:1000'],
-            times: 2,
-          },
-        ]
-        fileDownload(JSON.stringify(myConfig), 'config.json')
-      }
-    },
-
-    setFileCommands(file: File) {
-      const reader = new FileReader()
-      reader.onload = (evt: any) => {
-        const temp = JSON.parse(evt.target.result)
-        for (let i = 0; i < temp.length; i++) {
-          this.file.push({ key: temp[i].name, value: temp[i] })
-        }
-
-        this.isFile = true
-      }
-      reader.readAsText(file)
     },
 
     cmdDelay(timeMs: number) {
@@ -235,10 +168,15 @@ export default Vue.extend({
               await this.cmdDelay(parseInt(temp[1]))
             }
           } else {
-            // await this.writer.write(tempCmd[j] + '\r\n')
+            console.log(tempCmd[j] + '\r\n')
+            this.$store.dispatch('serial/writeLine1', tempCmd[j])
           }
         }
       }
+    },
+
+    async commandClik(index: number) {
+      await this.setButtonCommand(this.commands[index])
     },
   },
 })
