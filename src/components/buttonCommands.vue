@@ -40,78 +40,6 @@
       </v-col>
     </v-row>
   </div>
-  <!-- <v-btn
-          color="error"
-          class="mx-0 mb-3 pa-0"
-          block
-          @click="commandClik"
-        >
-          Stop file saving
-        </v-btn>
-        <v-btn
-          color="error"
-          class="mx-0 mb-3 pa-0"
-          block
-          @click="stopFileSaving"
-        >
-          Stop file saving
-        </v-btn> -->
-  <!-- <v-container v-if="timeText" fluid>
-          <v-btn
-            elevation="2"
-            color="error"
-            x-large
-            block
-            @click="stopTimeText"
-          >
-            No Time Text
-          </v-btn>
-        </v-container>
-        <v-container v-else fluid>
-          <v-btn
-            elevation="2"
-            color="primary"
-            x-large
-            block
-            @click="startTimeText"
-          >
-            Add Time Text
-          </v-btn>
-        </v-container>
-        <v-container v-if="isFile === false" fluid>
-          <v-btn
-            elevation="2"
-            color="normal"
-            x-large
-            block
-            @click="getFileExemple"
-          >
-            Get File Exemple
-          </v-btn>
-        </v-container>
-        <v-container v-if="isFile === false" fluid>
-          <v-input x-large block> </v-input>
-          <v-file-input
-            truncate-length="15"
-            accept=".json"
-            outlined
-            label="File input"
-            @change="setFileCommands"
-          ></v-file-input>
-        </v-container>
-        <div v-if="isFile === true">
-          <v-container v-for="i in file" :key="i.key" fluid>
-            <v-btn
-              elevation="2"
-              color="normal"
-              x-large
-              block
-              @click="setButtonCommand(i)"
-            >
-              {{ i.key }}
-            </v-btn>
-          </v-container>
-        </div>-->
 </template>
 
 <script lang="ts">
@@ -135,6 +63,8 @@ export default Vue.extend({
     ...mapGetters({
       optionDuoMode: 'option/isOptionDuoMode',
       commands: 'commands/getCommands',
+      isSerialOpen1: 'serial/isSerialOpen1',
+      isSerialOpen2: 'serial/isSerialOpen2',
     }),
   },
 
@@ -160,6 +90,7 @@ export default Vue.extend({
     async setButtonCommand(item: any) {
       const tempCmd = item.value.cmd
       const tempTimes = item.value.times
+      const tempWindow = item.value.window ?? 1
       for (let i = 0; i < tempTimes; i++) {
         for (let j = 0; j < tempCmd.length; j++) {
           if (tempCmd[j].startsWith('/!')) {
@@ -167,8 +98,9 @@ export default Vue.extend({
             if (temp[0].toLowerCase() === '/!delay') {
               await this.cmdDelay(parseInt(temp[1]))
             }
+          } else if (tempWindow === 2) {
+            this.$store.dispatch('serial/writeLine2', tempCmd[j])
           } else {
-            console.log(tempCmd[j] + '\r\n')
             this.$store.dispatch('serial/writeLine1', tempCmd[j])
           }
         }

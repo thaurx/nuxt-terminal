@@ -2,18 +2,17 @@
   <v-card outlined color="transparent">
     <v-row v-if="optionCommands">
       <v-col cols="9">
-        <!-- <v-row v-if="optionDuoMode">
+        <v-row v-if="optionDuoMode">
           <v-col cols="6">
-            <WindowTerminal init="1" />
+            <WindowTerminal1 />
           </v-col>
           <v-col cols="6">
-            <WindowTerminal init="2" />
+            <WindowTerminal2 />
           </v-col>
         </v-row>
-        <v-row v-else> -->
-        <v-row>
+        <v-row v-else>
           <v-col cols="12">
-            <WindowTerminal init="1" />
+            <WindowTerminal1 />
           </v-col>
         </v-row>
       </v-col>
@@ -23,18 +22,17 @@
     </v-row>
     <v-row v-else>
       <v-col cols="12">
-        <!-- <v-row v-if="optionDuoMode">
+        <v-row v-if="optionDuoMode">
           <v-col cols="6">
-            <WindowTerminal init="1" />
+            <WindowTerminal1 />
           </v-col>
           <v-col cols="6">
-            <WindowTerminal init="2" />
+            <WindowTerminal2 />
           </v-col>
         </v-row>
-        <v-row v-else> -->
-        <v-row>
+        <v-row v-else>
           <v-col cols="12">
-            <WindowTerminal init="1" />
+            <WindowTerminal1 />
           </v-col>
         </v-row>
       </v-col>
@@ -47,7 +45,8 @@ import { mapGetters } from 'vuex'
 import Vue from 'vue'
 
 import ButtonCommands from '../components/buttonCommands.vue'
-import WindowTerminal from '../components/windowTerminal.vue'
+import WindowTerminal1 from '../components/windowTerminal1.vue'
+import WindowTerminal2 from '../components/windowTerminal2.vue'
 
 interface Idata {}
 
@@ -56,7 +55,8 @@ export default Vue.extend({
 
   components: {
     ButtonCommands,
-    WindowTerminal,
+    WindowTerminal1,
+    WindowTerminal2,
   },
 
   data: (): Idata => ({}),

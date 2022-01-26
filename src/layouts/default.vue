@@ -115,7 +115,7 @@ export default Vue.extend({
 
   data: (): Idata => ({
     title: 'Nuxt Terminal',
-    version: 'V1.1.1',
+    version: 'V1.1.3',
     drawnerL: false,
     items1: [
       { title: '', icon: '' },
@@ -162,9 +162,6 @@ export default Vue.extend({
     },
 
     async onSwitch(item: any) {
-      // console.log(item)
-      // item.switch = !item.switch
-
       switch (item.title) {
         case 'Add time':
           this.$store.commit('option/setOptionAddTime', !item.switch)
@@ -203,12 +200,14 @@ export default Vue.extend({
             cmd: ['AT\r\n', '/!delay:100', 'ATI13\r\n', '/!delay:1000'],
             times: 2,
             index: 1,
+            window: 1,
           },
           {
             name: 'AT',
             cmd: ['AT\r\n', '/!delay:100', 'ATI13\r\n', '/!delay:1000'],
             times: 2,
             index: 2,
+            window: 1,
           },
         ]
         fileDownload(JSON.stringify(myConfig), 'config.json')
@@ -218,11 +217,13 @@ export default Vue.extend({
             name: 'AT',
             cmd: ['AT\r\n', '/!delay:100', 'ATI13\r\n', '/!delay:1000'],
             times: 2,
+            window: 2,
           },
           {
             name: 'AT',
             cmd: ['AT\r\n', '/!delay:100', 'ATI13\r\n', '/!delay:1000'],
             times: 2,
+            window: 2,
           },
         ]
         fileDownload(JSON.stringify(myConfig), 'config.json')

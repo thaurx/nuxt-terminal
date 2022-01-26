@@ -28,6 +28,9 @@ interface Istate {
   serialPort2: any
   serialPorts: Array<any>
 
+  serialBaudate1: number
+  serialBaudate2: number
+
   serialOpen1: boolean
   serialOpen2: boolean
 
@@ -50,6 +53,9 @@ export const state = (): Istate => ({
   serialPort1: null,
   serialPort2: null,
   serialPorts: [],
+
+  serialBaudate1: 9600,
+  serialBaudate2: 9600,
 
   serialOpen1: false,
   serialOpen2: false,
@@ -82,6 +88,13 @@ export const getters = {
     return state.serialPorts
   },
 
+  getSerialBaudate1: (state: Istate) => {
+    return state.serialBaudate1
+  },
+  getSerialBaudate2: (state: Istate) => {
+    return state.serialBaudate2
+  },
+
   isSerialOpen1: (state: Istate) => {
     return state.serialOpen1
   },
@@ -103,6 +116,13 @@ export const mutations = {
   },
   setSerialPorts(state: Istate, input: Array<any>) {
     state.serialPorts = input
+  },
+
+  setSerialBaudate1(state: Istate, input: any) {
+    state.serialBaudate1 = input
+  },
+  setSerialBaudate2(state: Istate, input: any) {
+    state.serialBaudate2 = input
   },
 
   setSerialOpen1(state: Istate, input: any) {
@@ -235,7 +255,7 @@ export const actions = {
   },
 
   async openSerialPort1({ commit, state }: any) {
-    await state.serialPort1.open({ baudRate: 9600 })
+    await state.serialPort1.open({ baudRate: state.serialBaudate1 })
     commit('setSerialOpen1', true)
 
     // Stream Rx / Tx
@@ -259,7 +279,7 @@ export const actions = {
     }
   },
   async openSerialPort2({ commit, state }: any) {
-    await state.serialPort2.open({ baudRate: 9600 })
+    await state.serialPort2.open({ baudRate: state.serialBaudate2 })
     commit('setSerialOpen2', true)
 
     // Stream Rx / Tx

@@ -4,7 +4,7 @@
       <v-col cols="4">
         <v-select
           :value.sync="selected"
-          :items="ports"
+          :items="serialPorts"
           solo
           dense
           item-text="name"
@@ -15,15 +15,16 @@
       </v-col>
       <v-col cols="4">
         <v-select
-          :value-sync="baudrate"
+          :value-sync="serialBaudate"
           solo
           dense
           label="Baudrate"
           :items="baudrates"
+          @change="onBaudrate"
         ></v-select>
       </v-col>
       <v-col cols="4">
-        <v-btn v-if="isSerialOpen1" block color="error" @click="closePort"
+        <v-btn v-if="isSerialOpen" block color="error" @click="closePort"
           >Close</v-btn
         >
         <v-btn v-else block color="success" @click="openPort">Open</v-btn>
@@ -32,14 +33,8 @@
     <v-row>
       <v-col cols="12">
         <v-card :id="id" class="overflow-y-auto" :height="nbRows">
-          <v-card-text v-if="init === '1'">
-            <div v-for="(n, i) in consoleTab1" :key="i" :class="n.color">
-              {{ n.value }}
-            </div>
-            <br />
-          </v-card-text>
-          <v-card-text v-else>
-            <div v-for="(n, i) in consoleTab2" :key="i" :class="n.color">
+          <v-card-text>
+            <div v-for="(n, i) in consoleTab" :key="i" :class="n.color">
               {{ n.value }}
             </div>
             <br />
@@ -69,16 +64,11 @@ interface Idata {
   id: any
   portOpen: boolean
   selected: any
-  baudrate: number
   baudrates: Array<number>
 }
 
 export default Vue.extend({
-  name: 'WindowTerminal',
-
-  props: {
-    init: String,
-  },
+  name: 'WindowTerminal2',
 
   data: (): Idata => ({
     innerHeight: 1080,
@@ -88,17 +78,16 @@ export default Vue.extend({
     id: '',
     portOpen: false,
     selected: null,
-    baudrate: 9600,
     baudrates: [9600, 115200, 500000],
   }),
 
   computed: {
     ...mapGetters({
-      consoleTab1: 'option/getConsoleTab1',
-      consoleTab2: 'option/getConsoleTab2',
-      isSerialOpen1: 'serial/isSerialOpen1',
+      consoleTab: 'option/getConsoleTab2',
       serial: 'serial/getSerial',
-      ports: 'serial/getSerialPorts',
+      serialPorts: 'serial/getSerialPorts',
+      isSerialOpen: 'serial/isSerialOpen2',
+      serialBaudate: 'serial/getSerialBaudate2',
     }),
   },
 
@@ -108,7 +97,7 @@ export default Vue.extend({
 
   mounted() {
     // @ts-ignore
-    this.id = 'id_textarea' + this.init
+    this.id = 'id_textarea' + '2'
 
     //
     this.reportWindowSize()
@@ -128,37 +117,40 @@ export default Vue.extend({
       }
     },
 
+    onBaudrate(baudrate: number) {
+      this.closePort()
+      this.$store.commit('serial/setSerialBaudate1', baudrate)
+    },
+
     onInput() {
-      if (this.isSerialOpen1) {
-        this.$store.dispatch('serial/writeLine1', this.input)
+      if (this.isSerialOpen) {
+        this.$store.dispatch('serial/writeLine2', this.input)
       }
     },
 
     initPort() {
-      this.$store.dispatch('serial/requestSerial1', this.init)
+      this.$store.dispatch('serial/requestSerial2')
     },
 
     async selectPort(selected: string) {
+      this.closePort()
       if (selected === 'Add port') {
         await this.initPort()
       } else {
         const get = parseInt(selected.split(' ')[1]) - 1
-        // this.port = this.ports[get].port
-        this.$store.commit('serial/setSerialPort1', this.ports[get].port)
-        console.log(get)
+        this.$store.commit('serial/setSerialPort2', this.serialPorts[get].port)
+        // console.log(get)
       }
     },
 
     closePort() {
-      this.$store.dispatch('serial/closeSerialPort1', {
-        index: this.init,
-      })
+      if (this.isSerialOpen) {
+        this.$store.dispatch('serial/closeSerialPort2')
+      }
     },
 
     openPort() {
-      this.$store.dispatch('serial/openSerialPort1', {
-        index: this.init,
-      })
+      this.$store.dispatch('serial/openSerialPort2')
     },
   },
 })
