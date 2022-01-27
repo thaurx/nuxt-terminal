@@ -123,13 +123,19 @@ export const mutations = {
     state.optionDuoMode = value
     state.items[2].switch = value
   },
+  setOptionFileTxtStart(state: Istate) {
+    state.optionFileTxt = false
+    state.items[3].switch = false
+  },
   async setOptionFileTxt(state: Istate, value: boolean) {
-    state.optionFileTxt = value
-    if (value === false) {
-      await state.writableStream.close()
-      window.onbeforeunload = () => {}
+    if (state.optionFileTxt !== value) {
+      state.optionFileTxt = value
+      if (value === false) {
+        await state.writableStream.close()
+        window.onbeforeunload = () => {}
+      }
+      state.items[3].switch = value
     }
-    state.items[3].switch = value
   },
   setOptionUartColor(state: Istate, value: boolean) {
     state.optionUartColor = value

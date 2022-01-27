@@ -125,6 +125,7 @@ export default Vue.extend({
 
   mounted() {
     this.$store.dispatch('serial/initSerial')
+    this.$store.commit('option/setOptionFileTxtStart', false)
 
     window.onbeforeunload = () => {
       this.$store.commit('option/clearConsoleText1', false)
@@ -142,8 +143,6 @@ export default Vue.extend({
         // create a FileSystemWritableFileStream to write to
         const myWritableStream = await newHandle.createWritable()
         this.$store.commit('option/setWritableStream', myWritableStream)
-
-        // close the file and write the contents to disk.
         this.$store.commit('option/setOptionFileTxt', true)
       } else {
         this.$store.commit('option/setOptionFileTxt', false)
