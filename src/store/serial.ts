@@ -147,7 +147,7 @@ export const mutations = {
 
   setSerialRefresh1(state: Istate, input: any) {
     state.serialRefresh1 = input
-    if (input === 'true') {
+    if (input === true) {
       const textarea = document.getElementById('id_textarea' + '1')
       if (textarea !== null) {
         textarea.scrollTop = textarea.scrollHeight
@@ -156,7 +156,7 @@ export const mutations = {
   },
   setSerialRefresh2(state: Istate, input: any) {
     state.serialRefresh2 = input
-    if (input === 'true') {
+    if (input === true) {
       const textarea = document.getElementById('id_textarea' + '2')
       if (textarea !== null) {
         textarea.scrollTop = textarea.scrollHeight
