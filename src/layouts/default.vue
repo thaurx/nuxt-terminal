@@ -90,6 +90,8 @@ import Vue from 'vue'
 
 import fileDownload from 'js-file-download'
 
+import pjson from '../../package.json'
+
 interface Idata {
   title: string
   version: string
@@ -102,7 +104,7 @@ export default Vue.extend({
 
   data: (): Idata => ({
     title: 'Nuxt Terminal',
-    version: 'V1.5.3',
+    version: 'V' + pjson.version,
     drawnerL: false,
     items1: [
       { title: '', icon: '' },
