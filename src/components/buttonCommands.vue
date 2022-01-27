@@ -89,7 +89,7 @@ export default Vue.extend({
 
     async setButtonCommand(item: any) {
       const tempCmd = item.value.cmd
-      const tempTimes = item.value.times
+      const tempTimes = item.value.times ?? 1
       for (let i = 0; i < tempTimes; i++) {
         for (let j = 0; j < tempCmd.length; j++) {
           if (tempCmd[j].type === 'serial') {
