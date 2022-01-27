@@ -92,20 +92,14 @@ export default Vue.extend({
       const tempTimes = item.value.times
       for (let i = 0; i < tempTimes; i++) {
         for (let j = 0; j < tempCmd.length; j++) {
-          if (tempCmd[j].startsWith('/!')) {
-            const temp = tempCmd[j].split(':')
-            if (temp[0].toLowerCase() === '/!delay') {
-              await this.cmdDelay(parseInt(temp[1]))
-            }
-          } else {
-            const tempWindow = tempCmd[j].split(']')
-            if (tempWindow[0] === '2') {
-              this.$store.dispatch('serial/writeLine2', tempWindow[1])
-            } else if (tempWindow.length > 1) {
-              this.$store.dispatch('serial/writeLine1', tempWindow[1])
+          if (tempCmd[j].type === 'serial') {
+            if (tempCmd[j].window && tempCmd[j].window === 2) {
+              this.$store.dispatch('serial/writeLine2', tempCmd[j].value)
             } else {
-              this.$store.dispatch('serial/writeLine1', tempWindow[0])
+              this.$store.dispatch('serial/writeLine1', tempCmd[j].value)
             }
+          } else if (tempCmd[j].type === 'delay') {
+            await this.cmdDelay(tempCmd[j].value)
           }
         }
       }

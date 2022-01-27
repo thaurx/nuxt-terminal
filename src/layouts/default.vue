@@ -187,28 +187,122 @@ export default Vue.extend({
           {
             name: 'Example Duo 1',
             cmd: [
-              '1]AT\r\n',
-              '/!delay:100',
-              '2]AT\r\n',
-              '/!delay:100',
-              '1]AT\r\n',
-              '/!delay:100',
-              '1]ATI13\r\n',
-              '/!delay:1000',
+              {
+                type: 'serial',
+                value: 'AT\r\n',
+                window: 1,
+              },
+              {
+                type: 'delay',
+                value: '100',
+              },
+              {
+                type: 'serial',
+                value: 'ATI5\r\n',
+                window: 1,
+              },
+              {
+                type: 'delay',
+                value: '100',
+              },
+              {
+                type: 'serial',
+                value: 'ATI13\r\n',
+                window: 1,
+              },
+              {
+                type: 'delay',
+                value: '1000',
+              },
             ],
             times: 2,
           },
           {
             name: 'Example Duo 2',
             cmd: [
-              '2]AT\r\n',
-              '/!delay:100',
-              '1]AT\r\n',
-              '/!delay:100',
-              '2]AT\r\n',
-              '/!delay:100',
-              '2]ATI13\r\n',
-              '/!delay:1000',
+              {
+                type: 'serial',
+                value: 'AT\r\n',
+                window: 2,
+              },
+              {
+                type: 'delay',
+                value: '100',
+              },
+              {
+                type: 'serial',
+                value: 'ATI5\r\n',
+                window: 2,
+              },
+              {
+                type: 'delay',
+                value: '100',
+              },
+              {
+                type: 'serial',
+                value: 'ATI13\r\n',
+                window: 2,
+              },
+              {
+                type: 'delay',
+                value: '1000',
+              },
+            ],
+            times: 2,
+          },
+          {
+            name: 'Example Duo 3',
+            cmd: [
+              {
+                type: 'serial',
+                value: 'AT\r\n',
+                window: 2,
+              },
+              {
+                type: 'delay',
+                value: '100',
+              },
+              {
+                type: 'serial',
+                value: 'AT\r\n',
+                window: 1,
+              },
+              {
+                type: 'delay',
+                value: '100',
+              },
+              {
+                type: 'serial',
+                value: 'ATI5\r\n',
+                window: 2,
+              },
+              {
+                type: 'delay',
+                value: '100',
+              },
+              {
+                type: 'serial',
+                value: 'ATI5\r\n',
+                window: 1,
+              },
+              {
+                type: 'delay',
+                value: '100',
+              },
+              {
+                type: 'serial',
+                value: 'ATI13\r\n',
+                window: 1,
+              },
+              {
+                type: 'serial',
+                value: 'ATI13\r\n',
+                window: 2,
+              },
+              {
+                type: 'delay',
+                value: '1000',
+              },
             ],
             times: 2,
           },
@@ -219,28 +313,33 @@ export default Vue.extend({
           {
             name: 'Example 1',
             cmd: [
-              'AT\r\n',
-              '/!delay:100',
-              'AT\r\n',
-              '/!delay:100',
-              'AT\r\n',
-              '/!delay:100',
-              'ATI13\r\n',
-              '/!delay:1000',
-            ],
-            times: 2,
-          },
-          {
-            name: 'Example 2',
-            cmd: [
-              'AT\r\n',
-              '/!delay:100',
-              'AT\r\n',
-              '/!delay:100',
-              'AT\r\n',
-              '/!delay:100',
-              'ATI13\r\n',
-              '/!delay:1000',
+              {
+                type: 'serial',
+                value: 'AT\r\n',
+                window: 1,
+              },
+              {
+                type: 'delay',
+                value: '100',
+              },
+              {
+                type: 'serial',
+                value: 'ATI5\r\n',
+                window: 1,
+              },
+              {
+                type: 'delay',
+                value: '100',
+              },
+              {
+                type: 'serial',
+                value: 'ATI13\r\n',
+                window: 1,
+              },
+              {
+                type: 'delay',
+                value: '1000',
+              },
             ],
             times: 2,
           },
