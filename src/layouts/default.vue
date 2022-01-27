@@ -334,6 +334,7 @@ export default Vue.extend({
     setFileCommands(file: File) {
       const reader = new FileReader()
       reader.onload = (evt: any) => {
+        this.drawnerL = false
         const temp = JSON.parse(evt.target.result)
         this.$store.commit('commands/clearCommands')
         for (let i = 0; i < temp.length; i++) {
