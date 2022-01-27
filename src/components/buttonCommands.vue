@@ -100,6 +100,15 @@ export default Vue.extend({
             }
           } else if (tempCmd[j].type === 'delay') {
             await this.cmdDelay(tempCmd[j].value)
+          } else if (tempCmd[j].type === 'clear') {
+            if (tempCmd[j].value === 1) {
+              this.$store.commit('option/clearConsoleText1', false)
+            } else if (tempCmd[j].value === 2) {
+              this.$store.commit('option/clearConsoleText2', false)
+            } else {
+              this.$store.commit('option/clearConsoleText1', false)
+              this.$store.commit('option/clearConsoleText2', false)
+            }
           }
         }
       }

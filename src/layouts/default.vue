@@ -189,7 +189,7 @@ export default Vue.extend({
             cmd: [
               {
                 type: 'serial',
-                value: 'AT\r\n',
+                value: 'AT',
                 window: 1,
               },
               {
@@ -198,7 +198,7 @@ export default Vue.extend({
               },
               {
                 type: 'serial',
-                value: 'ATI5\r\n',
+                value: 'ATI5',
                 window: 1,
               },
               {
@@ -207,7 +207,7 @@ export default Vue.extend({
               },
               {
                 type: 'serial',
-                value: 'ATI13\r\n',
+                value: 'ATI13',
                 window: 1,
               },
               {
@@ -222,7 +222,7 @@ export default Vue.extend({
             cmd: [
               {
                 type: 'serial',
-                value: 'AT\r\n',
+                value: 'AT',
                 window: 2,
               },
               {
@@ -231,7 +231,7 @@ export default Vue.extend({
               },
               {
                 type: 'serial',
-                value: 'ATI5\r\n',
+                value: 'ATI5',
                 window: 2,
               },
               {
@@ -240,7 +240,7 @@ export default Vue.extend({
               },
               {
                 type: 'serial',
-                value: 'ATI13\r\n',
+                value: 'ATI13',
                 window: 2,
               },
               {
@@ -254,8 +254,11 @@ export default Vue.extend({
             name: 'Example Duo 3',
             cmd: [
               {
+                type: 'clear',
+              },
+              {
                 type: 'serial',
-                value: 'AT\r\n',
+                value: 'AT',
                 window: 2,
               },
               {
@@ -264,7 +267,7 @@ export default Vue.extend({
               },
               {
                 type: 'serial',
-                value: 'AT\r\n',
+                value: 'AT',
                 window: 1,
               },
               {
@@ -273,7 +276,7 @@ export default Vue.extend({
               },
               {
                 type: 'serial',
-                value: 'ATI5\r\n',
+                value: 'ATI5',
                 window: 2,
               },
               {
@@ -282,7 +285,7 @@ export default Vue.extend({
               },
               {
                 type: 'serial',
-                value: 'ATI5\r\n',
+                value: 'ATI5',
                 window: 1,
               },
               {
@@ -291,12 +294,12 @@ export default Vue.extend({
               },
               {
                 type: 'serial',
-                value: 'ATI13\r\n',
+                value: 'ATI13',
                 window: 1,
               },
               {
                 type: 'serial',
-                value: 'ATI13\r\n',
+                value: 'ATI13',
                 window: 2,
               },
               {
@@ -315,7 +318,7 @@ export default Vue.extend({
             cmd: [
               {
                 type: 'serial',
-                value: 'AT\r\n',
+                value: 'AT',
                 window: 1,
               },
               {
@@ -324,7 +327,7 @@ export default Vue.extend({
               },
               {
                 type: 'serial',
-                value: 'ATI5\r\n',
+                value: 'ATI5',
                 window: 1,
               },
               {
@@ -333,7 +336,43 @@ export default Vue.extend({
               },
               {
                 type: 'serial',
-                value: 'ATI13\r\n',
+                value: 'ATI13',
+                window: 1,
+              },
+              {
+                type: 'delay',
+                value: '1000',
+              },
+            ],
+            times: 2,
+          },
+          {
+            name: 'Example 2',
+            cmd: [
+              {
+                type: 'clear',
+              },
+              {
+                type: 'serial',
+                value: 'AT',
+                window: 1,
+              },
+              {
+                type: 'delay',
+                value: '100',
+              },
+              {
+                type: 'serial',
+                value: 'ATI5',
+                window: 1,
+              },
+              {
+                type: 'delay',
+                value: '100',
+              },
+              {
+                type: 'serial',
+                value: 'ATI13',
                 window: 1,
               },
               {
