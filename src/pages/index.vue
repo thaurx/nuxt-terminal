@@ -74,16 +74,19 @@ export default Vue.extend({
     }),
   },
 
-  destroyed() {},
-
   created() {},
 
-  mounted() {},
+  destroyed() {},
 
-  methods: {
-    onClear() {
-      this.$store.commit('clearConsoleText')
-    },
+  mounted() {
+    window.addEventListener('keydown', (ev: KeyboardEvent) => {
+      if (ev.key === 'Delete') {
+        this.$store.commit('option/clearConsoleText1')
+        this.$store.commit('option/clearConsoleText2')
+      }
+    })
   },
+
+  methods: {},
 })
 </script>

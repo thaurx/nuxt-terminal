@@ -62,7 +62,6 @@ interface Idata {
   nbRows: number
   input: string
   id: any
-  portOpen: boolean
   selected: any
   baudrates: Array<number>
 }
@@ -76,7 +75,6 @@ export default Vue.extend({
     nbRows: 500,
     input: '',
     id: '',
-    portOpen: false,
     selected: null,
     baudrates: [9600, 115200, 500000],
   }),
@@ -122,6 +120,10 @@ export default Vue.extend({
       this.$store.commit('serial/setSerialBaudate2', baudrate)
     },
 
+    onClear() {
+      this.$store.commit('option/clearConsoleText2')
+    },
+
     onInput() {
       if (this.isSerialOpen) {
         this.$store.dispatch('serial/writeLine2', this.input)
@@ -133,6 +135,7 @@ export default Vue.extend({
     },
 
     async selectPort(selected: string) {
+      this.onClear()
       this.closePort()
       if (selected === 'Add port') {
         await this.initPort()

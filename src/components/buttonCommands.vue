@@ -90,7 +90,6 @@ export default Vue.extend({
     async setButtonCommand(item: any) {
       const tempCmd = item.value.cmd
       const tempTimes = item.value.times
-      const tempWindow = item.value.window ?? 1
       for (let i = 0; i < tempTimes; i++) {
         for (let j = 0; j < tempCmd.length; j++) {
           if (tempCmd[j].startsWith('/!')) {
@@ -98,10 +97,15 @@ export default Vue.extend({
             if (temp[0].toLowerCase() === '/!delay') {
               await this.cmdDelay(parseInt(temp[1]))
             }
-          } else if (tempWindow === 2) {
-            this.$store.dispatch('serial/writeLine2', tempCmd[j])
           } else {
-            this.$store.dispatch('serial/writeLine1', tempCmd[j])
+            const tempWindow = tempCmd[j].split(']')
+            if (tempWindow[0] === '2') {
+              this.$store.dispatch('serial/writeLine2', tempWindow[1])
+            } else if (tempWindow.length > 1) {
+              this.$store.dispatch('serial/writeLine1', tempWindow[1])
+            } else {
+              this.$store.dispatch('serial/writeLine1', tempWindow[0])
+            }
           }
         }
       }

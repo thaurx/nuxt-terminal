@@ -40,17 +40,6 @@
 
       <v-divider></v-divider>
 
-      <!-- <v-list dense nav>
-        <v-list-item v-for="item in items1" :key="item.title" link>
-          <v-list-item-icon>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-item-icon>
-
-          <v-list-item-content>
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item> -->
-
       <v-list dense nav>
         <v-list-item link @click="getFileExemple">
           <v-list-item-icon>
@@ -64,8 +53,6 @@
 
         <v-list-item link>
           <v-list-item-content>
-            <!-- <v-list-item-title>Set Commands File </v-list-item-title> -->
-
             <v-file-input
               truncate-length="15"
               accept=".json"
@@ -115,7 +102,7 @@ export default Vue.extend({
 
   data: (): Idata => ({
     title: 'Nuxt Terminal',
-    version: 'V1.1.3',
+    version: 'V1.5.3',
     drawnerL: false,
     items1: [
       { title: '', icon: '' },
@@ -196,34 +183,64 @@ export default Vue.extend({
       if (this.optionDuoMode) {
         const myConfig = [
           {
-            name: 'AT',
-            cmd: ['AT\r\n', '/!delay:100', 'ATI13\r\n', '/!delay:1000'],
+            name: 'Example Duo 1',
+            cmd: [
+              '1]AT\r\n',
+              '/!delay:100',
+              '2]AT\r\n',
+              '/!delay:100',
+              '1]AT\r\n',
+              '/!delay:100',
+              '1]ATI13\r\n',
+              '/!delay:1000',
+            ],
             times: 2,
-            index: 1,
-            window: 1,
           },
           {
-            name: 'AT',
-            cmd: ['AT\r\n', '/!delay:100', 'ATI13\r\n', '/!delay:1000'],
+            name: 'Example Duo 2',
+            cmd: [
+              '2]AT\r\n',
+              '/!delay:100',
+              '1]AT\r\n',
+              '/!delay:100',
+              '2]AT\r\n',
+              '/!delay:100',
+              '2]ATI13\r\n',
+              '/!delay:1000',
+            ],
             times: 2,
-            index: 2,
-            window: 1,
           },
         ]
         fileDownload(JSON.stringify(myConfig), 'config.json')
       } else {
         const myConfig = [
           {
-            name: 'AT',
-            cmd: ['AT\r\n', '/!delay:100', 'ATI13\r\n', '/!delay:1000'],
+            name: 'Example 1',
+            cmd: [
+              'AT\r\n',
+              '/!delay:100',
+              'AT\r\n',
+              '/!delay:100',
+              'AT\r\n',
+              '/!delay:100',
+              'ATI13\r\n',
+              '/!delay:1000',
+            ],
             times: 2,
-            window: 2,
           },
           {
-            name: 'AT',
-            cmd: ['AT\r\n', '/!delay:100', 'ATI13\r\n', '/!delay:1000'],
+            name: 'Example 2',
+            cmd: [
+              'AT\r\n',
+              '/!delay:100',
+              'AT\r\n',
+              '/!delay:100',
+              'AT\r\n',
+              '/!delay:100',
+              'ATI13\r\n',
+              '/!delay:1000',
+            ],
             times: 2,
-            window: 2,
           },
         ]
         fileDownload(JSON.stringify(myConfig), 'config.json')
