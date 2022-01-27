@@ -99,14 +99,29 @@ export default Vue.extend({
             if (cmdWindows === 2) {
               for (let k = 0; k < cmdTimes; k++) {
                 this.$store.dispatch('serial/writeLine2', tempCmd[j].value)
-                await this.cmdDelay(cmdDelay)
+                if (cmdDelay > 0) {
+                  await this.cmdDelay(cmdDelay)
+                }
               }
-            } else {
+            } else if (cmdWindows === 1) {
               for (let k = 0; k < cmdTimes; k++) {
                 this.$store.dispatch('serial/writeLine1', tempCmd[j].value)
-                await this.cmdDelay(cmdDelay)
+                if (cmdDelay > 0) {
+                  await this.cmdDelay(cmdDelay)
+                }
+              }
+            } else if (cmdWindows === 0) {
+              for (let k = 0; k < cmdTimes; k++) {
+                this.$store.dispatch('serial/writeLine2', tempCmd[j].value)
+                this.$store.dispatch('serial/writeLine1', tempCmd[j].value)
+                if (cmdDelay > 0) {
+                  await this.cmdDelay(cmdDelay)
+                }
               }
             }
+          } else if (tempCmd[j].type === 'alert') {
+            const alertMsg = tempCmd[j].value ?? ''
+            alert(alertMsg)
           } else if (tempCmd[j].type === 'delay') {
             await this.cmdDelay(tempCmd[j].value)
           } else if (tempCmd[j].type === 'clear') {
