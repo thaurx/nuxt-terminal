@@ -45,6 +45,9 @@ interface Istate {
 
   serialWriterStop2: any
   serialWriter2: any
+
+  serialRefresh1: boolean
+  serialRefresh2: boolean
 }
 
 export const state = (): Istate => ({
@@ -71,6 +74,9 @@ export const state = (): Istate => ({
 
   serialWriterStop2: null,
   serialWriter2: null,
+
+  serialRefresh1: true,
+  serialRefresh2: true,
 })
 
 export const getters = {
@@ -101,6 +107,13 @@ export const getters = {
   isSerialOpen2: (state: Istate) => {
     return state.serialOpen2
   },
+
+  isSerialRefresh1: (state: Istate) => {
+    return state.serialRefresh1
+  },
+  isSerialRefresh2: (state: Istate) => {
+    return state.serialRefresh2
+  },
 }
 
 export const mutations = {
@@ -130,6 +143,25 @@ export const mutations = {
   },
   setSerialOpen2(state: Istate, input: any) {
     state.serialOpen2 = input
+  },
+
+  setSerialRefresh1(state: Istate, input: any) {
+    state.serialRefresh1 = input
+    if (input === 'true') {
+      const textarea = document.getElementById('id_textarea' + '1')
+      if (textarea !== null) {
+        textarea.scrollTop = textarea.scrollHeight
+      }
+    }
+  },
+  setSerialRefresh2(state: Istate, input: any) {
+    state.serialRefresh2 = input
+    if (input === 'true') {
+      const textarea = document.getElementById('id_textarea' + '2')
+      if (textarea !== null) {
+        textarea.scrollTop = textarea.scrollHeight
+      }
+    }
   },
 
   setSerialStream1(state: Istate) {
@@ -272,9 +304,11 @@ export const actions = {
 
       // Add Text
       commit('option/addConsoleText' + '1', value, { root: true })
-      const textarea = document.getElementById('id_textarea' + '1')
-      if (textarea !== null) {
-        textarea.scrollTop = textarea.scrollHeight
+      if (state.serialRefresh1) {
+        const textarea = document.getElementById('id_textarea' + '1')
+        if (textarea !== null) {
+          textarea.scrollTop = textarea.scrollHeight
+        }
       }
     }
   },
@@ -296,9 +330,11 @@ export const actions = {
 
       // Add Text
       commit('option/addConsoleText' + '2', value, { root: true })
-      const textarea = document.getElementById('id_textarea' + '2')
-      if (textarea !== null) {
-        textarea.scrollTop = textarea.scrollHeight
+      if (state.serialRefresh2) {
+        const textarea = document.getElementById('id_textarea' + '2')
+        if (textarea !== null) {
+          textarea.scrollTop = textarea.scrollHeight
+        }
       }
     }
   },
@@ -308,9 +344,11 @@ export const actions = {
 
     // Add Text
     commit('option/addConsoleText' + '1', input, { root: true })
-    const textarea = document.getElementById('id_textarea' + '1')
-    if (textarea !== null) {
-      textarea.scrollTop = textarea.scrollHeight
+    if (state.serialRefresh1) {
+      const textarea = document.getElementById('id_textarea' + '1')
+      if (textarea !== null) {
+        textarea.scrollTop = textarea.scrollHeight
+      }
     }
   },
   async writeLine2({ commit, state }: any, input: any) {
@@ -318,9 +356,11 @@ export const actions = {
 
     // Add Text
     commit('option/addConsoleText' + '2', input, { root: true })
-    const textarea = document.getElementById('id_textarea' + '2')
-    if (textarea !== null) {
-      textarea.scrollTop = textarea.scrollHeight
+    if (state.serialRefresh2) {
+      const textarea = document.getElementById('id_textarea' + '2')
+      if (textarea !== null) {
+        textarea.scrollTop = textarea.scrollHeight
+      }
     }
   },
 }

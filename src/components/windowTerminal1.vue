@@ -33,7 +33,7 @@
     <v-row>
       <v-col cols="12">
         <v-card :id="id" class="overflow-y-auto" :height="nbRows">
-          <v-card-text>
+          <v-card-text @click="stopRefresh">
             <div v-for="(n, i) in consoleTab" :key="i" :class="n.color">
               {{ n.value }}
             </div>
@@ -45,7 +45,11 @@
           v-model="input"
           label="Send AT Command"
           hide-details="auto"
+          :append-icon="
+            marker ? 'mdi-stop-circle-outline' : 'mdi-play-circle-outline'
+          "
           @keyup.enter="onInput()"
+          @click:append="toggleMarker"
         ></v-text-field>
       </v-col>
     </v-row>
@@ -62,6 +66,7 @@ interface Idata {
   nbRows: number
   input: string
   id: any
+  marker: boolean
   selected: any
   baudrates: Array<number>
 }
@@ -75,6 +80,7 @@ export default Vue.extend({
     nbRows: 500,
     input: '',
     id: '',
+    marker: true,
     selected: null,
     baudrates: [9600, 115200, 500000],
   }),
@@ -115,6 +121,17 @@ export default Vue.extend({
       }
     },
 
+    toggleMarker() {
+      this.marker = !this.marker
+      this.$store.commit('serial/setSerialRefresh1', this.marker)
+    },
+
+    stopRefresh() {
+      if (this.marker === true) {
+        this.toggleMarker()
+      }
+    },
+
     onBaudrate(baudrate: number) {
       this.closePort()
       this.$store.commit('serial/setSerialBaudate1', baudrate)
@@ -126,6 +143,9 @@ export default Vue.extend({
 
     onInput() {
       if (this.isSerialOpen) {
+        if (this.marker === false) {
+          this.toggleMarker()
+        }
         this.$store.dispatch('serial/writeLine1', this.input)
       }
     },
